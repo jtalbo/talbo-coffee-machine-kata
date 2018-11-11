@@ -16,7 +16,17 @@ public class Order {
 	
 	private String message;
 	
+	private Double price;
 	
+	
+	public Double getPrice() {
+		return price;
+	}
+
+	public void setPrice(Double price) {
+		this.price = price;
+	}
+
 	public DrinkType getDrink() {
 		return drink;
 	}
