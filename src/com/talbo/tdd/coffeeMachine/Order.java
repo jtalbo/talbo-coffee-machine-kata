@@ -3,7 +3,7 @@ package com.talbo.tdd.coffeeMachine;
 public class Order {
 	
 	public enum DrinkType {
-		COFFEE, TEA, CHOCOLATE;
+		COFFEE, TEA, CHOCOLATE, ORANGE_JUICE;
 	}
 
 	private DrinkType drink;
@@ -16,7 +16,36 @@ public class Order {
 	
 	private String message;
 	
+	private Double price;
 	
+	private boolean isExtraHot;
+	
+	private boolean isNoWater;
+
+	public boolean isNoWater() {
+		return isNoWater;
+	}
+
+	public void setNoWater(boolean isNoWater) {
+		this.isNoWater = isNoWater;
+	}
+
+	public boolean isExtraHot() {
+		return isExtraHot;
+	}
+
+	public void setExtraHot(boolean isExtraHot) {
+		this.isExtraHot = isExtraHot;
+	}
+
+	public Double getPrice() {
+		return price;
+	}
+
+	public void setPrice(Double price) {
+		this.price = price;
+	}
+
 	public DrinkType getDrink() {
 		return drink;
 	}
@@ -59,7 +88,13 @@ public class Order {
 
 	@Override
 	public String toString() {
-		return "You have order a " + drink + " with " + nbSugar + " sugar and " + stickString + " stick.";
+		String extraHot;
+		if (isExtraHot) {
+			extraHot = "extra hot ";
+		} else {
+			extraHot = "";
+		}
+		return "Drink maker make 1 " + extraHot + drink + " with " + nbSugar + " sugar and " + stickString + " stick.";
 	}
 	
 	

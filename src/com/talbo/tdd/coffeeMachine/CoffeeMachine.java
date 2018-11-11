@@ -1,39 +1,111 @@
 package com.talbo.tdd.coffeeMachine;
 
-public class CoffeeMachine {
+public class CoffeeMachine implements BeverageQuantityChecker, EmailNotifier {
+
 
 	public static Order process(String command) {
 		Order order = new Order();
 		
 		String[] splittedCommand = command.split(":");
 		
-		verifyDrinkType(splittedCommand, order);
+		verifyOrderPayment(splittedCommand, order);
 		
-		System.out.println(order.toString());
+		
 		
 		return order;
 	}
 
 	
-	private static Order verifyDrinkType(String[] splittedCommand, Order order) {
-		if ("T".equals(splittedCommand[0])) {
-			order.setDrink(Order.DrinkType.TEA);
-		} else if ("H".equals(splittedCommand[0])) {
-			order.setDrink(Order.DrinkType.CHOCOLATE);
-		} else if ("C".equals(splittedCommand[0])) {
-			order.setDrink(Order.DrinkType.COFFEE);
+	private static Order verifyOrderPayment(String[] splittedCommand, Order order) {
+		boolean enoughMoney = false;
+		Double expectedPriceForThisDrink;
+		String insertedCoin = splittedCommand[3].toString();
+		Double insertedCoinInDoubleValue = Double.parseDouble(insertedCoin);
+		
+		if (splittedCommand.length == 5) {
+			if ("1".equals(splittedCommand[4])) {
+				BeverageQuantityChecker beverage = new CoffeeMachine();
+				beverage.isEmpty(splittedCommand[0]);
+				order.setNoWater(true);
+				System.out.println("Sorry we don't have some "+ splittedCommand[0] +" anymore !");
+				System.out.println("------------------------------------------------------------");
+				EmailNotifier email = new CoffeeMachine();
+				email.notifyMissingDrink("We don't have water anymore, pls can you reload");
+				System.out.println("An email has been send to reload the drink");
+				System.out.println("------------------------------------------------------------");
+			}
+		} else {
+		
+		
+		if ("T".equals(splittedCommand[0]) || "Th".equals(splittedCommand[0])) {
+			expectedPriceForThisDrink = 0.40;
+			System.out.println("You have select a Tea ! Please insert 0.40 cts ...");
+			if (insertedCoinInDoubleValue >= expectedPriceForThisDrink) {
+				enoughMoney = true;
+				order.setPrice(expectedPriceForThisDrink);
+			} else {
+				Double calculChange = expectedPriceForThisDrink - insertedCoinInDoubleValue;
+				String insertedCoinInDoubleFormat = String.format("%.2f", insertedCoinInDoubleValue);
+				String restMoney = String.format("%.2f", calculChange);
+				System.out.println("You have insert "+ insertedCoinInDoubleFormat + " cts, you need to insert "+ restMoney + " cts more.");
+			}
+		} else if ("H".equals(splittedCommand[0]) || "Hh".equals(splittedCommand[0])) {
+			expectedPriceForThisDrink = 0.50;
+			System.out.println("You have select a Chocolate ! Please insert 0.50 cts ...");
+			if (insertedCoinInDoubleValue >= expectedPriceForThisDrink) {
+				enoughMoney = true;
+				order.setPrice(expectedPriceForThisDrink);
+			} else {
+				Double calculChange = expectedPriceForThisDrink - insertedCoinInDoubleValue;
+				String insertedCoinInDoubleFormat = String.format("%.2f", insertedCoinInDoubleValue);
+				String restMoney = String.format("%.2f", calculChange);
+				System.out.println("You have insert "+ insertedCoinInDoubleFormat + " cts, you need to insert "+ restMoney + " cts more.");
+			}
+		} else if ("C".equals(splittedCommand[0]) || "Ch".equals(splittedCommand[0])) {
+			expectedPriceForThisDrink = 0.60;
+			System.out.println("You have select a Coffee ! Please insert 0.60 cts ...");
+			if (insertedCoinInDoubleValue >= expectedPriceForThisDrink) {
+				enoughMoney = true;
+				order.setPrice(expectedPriceForThisDrink);
+			} else {
+				Double calculChange = expectedPriceForThisDrink - insertedCoinInDoubleValue;
+				String insertedCoinInDoubleFormat = String.format("%.2f", insertedCoinInDoubleValue);
+				String restMoney = String.format("%.2f", calculChange);
+				System.out.println("You have insert "+ insertedCoinInDoubleFormat + " cts, you need to insert "+ restMoney + " cts more.");
+			}
+		} else if ("O".equals(splittedCommand[0])) {
+			expectedPriceForThisDrink = 0.60;
+			System.out.println("You have select a Orange Juice ! Please insert 0.60 cts ...");
+			if (insertedCoinInDoubleValue >= expectedPriceForThisDrink) {
+				enoughMoney = true;
+				order.setPrice(expectedPriceForThisDrink);
+			} else {
+				Double calculChange = expectedPriceForThisDrink - insertedCoinInDoubleValue;
+				String insertedCoinInDoubleFormat = String.format("%.2f", insertedCoinInDoubleValue);
+				String restMoney = String.format("%.2f", calculChange);
+				System.out.println("You have insert "+ insertedCoinInDoubleFormat + " cts, you need to insert "+ restMoney + " cts more.");
+			}
 		}
 		
-		prepareOrder(splittedCommand, order);
+		if (enoughMoney) {
+			prepareOrder(splittedCommand, order);
+		}
 		
+
+		
+		}
 		return order;
 	}
 
 	
 	private static Order prepareOrder(String[] splittedCommand, Order order) {
-		Integer drinkWithoutSugarAndStick = 1;
+		String noValue = "";
 		
-		if (drinkWithoutSugarAndStick.equals(splittedCommand.length)) {
+		extraHotDrink(splittedCommand, order);
+		
+		selectDrinkType(splittedCommand, order);
+		
+		if (noValue.equals(splittedCommand[1]) && noValue.equals(splittedCommand[2])) {
 			order.setNbSugar(0);
 			order.setHasStick(false);
 			order.setStickString("no");
@@ -54,10 +126,49 @@ public class CoffeeMachine {
 			}
 		
 		}
+
+		System.out.println(order.toString());
 		
 		return order;
 		
 	}
 	
+	private static void extraHotDrink(String[] splittedCommand, Order order) {
+		if ("Th".equals(splittedCommand[0])) {
+			splittedCommand[0] = splittedCommand[0].replace("Th", "T");
+			order.setExtraHot(true);
+		} else if ("Hh".equals(splittedCommand[0])) {
+			splittedCommand[0] = splittedCommand[0].replace("Hh", "H");
+			order.setExtraHot(true);
+		} else if ("Ch".equals(splittedCommand[0])) {
+			splittedCommand[0] = splittedCommand[0].replace("Ch", "C");
+			order.setExtraHot(true);
+		}
+	}
+	
+	private static void selectDrinkType(String[] splittedCommand, Order order) {
+		if ("T".equals(splittedCommand[0])) {
+			order.setDrink(Order.DrinkType.TEA);
+		} else if ("H".equals(splittedCommand[0])) {
+			order.setDrink(Order.DrinkType.CHOCOLATE);
+		} else if ("C".equals(splittedCommand[0])) {
+			order.setDrink(Order.DrinkType.COFFEE);
+		} else if ("O".equals(splittedCommand[0])) {
+			order.setDrink(Order.DrinkType.ORANGE_JUICE);
+		}
+	}
+	
+
+	@Override
+	public boolean isEmpty(String string) {
+		return false;
+	}
+
+
+	@Override
+	public void notifyMissingDrink(String drink) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }
